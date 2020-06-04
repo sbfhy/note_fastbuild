@@ -1,0 +1,144 @@
+
+// Windows Platform (VS 2015 Compiler, Windows 7.1A SDK)
+//	指定宏
+//------------------------------------------------------------------------------
+.VCInstallDir		= 'E:\VS2013\VC\'
+.WindowsSdkDir		= 'C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\'
+.FrameworkSDKDir	= '$WindowsSdkDir$'
+.WindowsSDK_LibraryPath_x86		= 'C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\'
+//------------------------------------------------------------------------------
+// 指定开发环境
+//------------------------------------------------------------------------------
+.VSBasePath         = 'E:\VS2013'
+//------------------------------------------------------------------------------
+Settings
+{
+    .Environment    = { "PATH=$VSBasePath$\Common7\IDE\;$VSBasePath$\VC\bin\amd64_x86\",
+                        "TMP=C:\Windows\Temp",
+                        "SystemRoot=C:\Windows" }
+}
+
+// X64 ToolChain
+// 指定具体的工具路径
+//------------------------------------------------------------------------------
+// 编译器
+.Compiler           = '$VSBasePath$\VC\bin\amd64_x86\cl.exe'
+// 编译选项
+.CompilerOptions    = '"%1"'           // Input
+                    + ' /Fo"%2"'       // Output
+                    //+ ' /Z7'           // Debug format (in .obj)
+                    + ' /c'            // Compile only
+                    + ' /nologo '       // No compiler spam
+                    + ' /EHsc /INCREMENTAL'
+					+ ' /GS /analyze- /W3 /Zc:wchar_t'
+					+ ' /D "_UNICODE" /D "UNICODE"'
+					+ ' /TP /fp:precise /errorReport:prompt /WX- /Zc:forScope /RTC1 /Gd /Oy-'
+					+ ' /bigobj'
+					+ ' /MDd'
+{{ range .ItemDefinitionGroup }}
+{{ if eq .Condition "'$(Configuration)|$(Platform)'=='Debug|Win32'"  }}
+	{{ range .ClCompile }}
+	{{ if .PreprocessorDefinitions }} {{ .PreprocessorDefinitions| SpliteMarco}} {{ end }}
+	{{ end }}
+{{ end }}
+{{ end }}
+
+// 链接器
+.Linker             = '$VSBasePath$\VC\bin\amd64_x86\link.exe'
+// 链接选项
+.LinkerOptions      = ' /OUT:"%2"'     // Output
+                    + ' "%1"'          // Input
+                    + ' /nologo'       // No linker spam
+                    + ' /DEBUG'        // Keep debug info when linking
+                    + ' /NODEFAULTLIB:libcmt.lib'
+                    + ' /MACHINE:X86'
+					+ ' /DYNAMICBASE "kernel32.lib" "user32.lib" "gdi32.lib" "winspool.lib" "comdlg32.lib" "advapi32.lib" "shell32.lib" "ole32.lib" "oleaut32.lib" "uuid.lib" "odbc32.lib" "odbccp32.lib"'
+
+// 库生成器
+.Librarian          = '$VSBasePath$\VC\bin\amd64_x86\lib.exe'
+// 库生成器选项
+.LibrarianOptions   = '"%1"'
+                    + ' /OUT:"%2"'
+                    + ' /nologo'
+                    + ' /MACHINE:X86'
+
+// 包含目录[常规] -----------------------------------------------------------------------
+.BaseIncludePaths   = ' /I"./"'
+                    + ' /I"$VCInstallDir$include\"'
+                    + ' /I"$VCInstallDir$atlmfc\include\"'
+					+ ' /I"$WindowsSdkDir$include\"'
+					+ ' /I"$FrameworkSDKDir$include\"'
+.CompilerOptions    + .BaseIncludePaths
+
+//	包含目录[附加] -----------------------------------------------------------------------
+.AttachIncludePaths = ' /I"./"'
+{{ range .ItemDefinitionGroup }}
+{{ if eq .Condition "'$(Configuration)|$(Platform)'=='Debug|Win32'"  }}
+	{{ range .ClCompile }}
+	{{ if .AdditionalIncludeDirectories }} {{ .AdditionalIncludeDirectories | Splitei }}  {{ end }}
+	{{ end }}
+{{ end }}
+{{ end }}
+.CompilerOptions    + .AttachIncludePaths
+
+// 库目录[常规]
+//------------------------------------------------------------------------------
+.BaseLibPaths       = ' /LIBPATH:"$VCInstallDir$lib\"'
+                    + ' /LIBPATH:"$VCInstallDir$atlmfc\lib\"'
+                    + ' /LIBPATH:"$WindowsSDK_LibraryPath_x86$"'
+.LinkerOptions      + .BaseLibPaths
+
+// 库目录[附加]
+//------------------------------------------------------------------------------
+.AttachLibPaths     = ''
+{{ range .ItemDefinitionGroup }}
+{{ if eq .Condition "'$(Configuration)|$(Platform)'=='Debug|Win32'"  }}
+	{{ range .Link }}
+	{{ if .AdditionalLibraryDirectories }} {{ .AdditionalLibraryDirectories |Splitelib }} {{ end }}
+	{{ end }}
+{{ end }}
+{{ end }}
+.LinkerOptions      + .AttachLibPaths
+
+
+// 生成libpb.lib
+//Library('pb')
+//{
+	//.CompilerInputPath = 'protocol\pb'        // 源文件所在目录,就是把该目录下所有的.cxx\.c文件编译成库文件
+	//.CompilerInputPattern = '*.cc'
+	//.LibrarianOutput = 'lib\libpb.lib'  // .obj文件 输出目录
+	//.CompilerOutputPath = 'winproject\libpb\Debug'  // 库文件 输出目录
+//}
+
+// 生成idipserver.exe
+ObjectList('{{ .TName }}_objs')                 // 生成idipserver所需的objs文件
+{
+    .CompilerInputPath = '.'         // 源文件所在目录,就是把该目录下所有的.cxx\.c文件编译.obj(s)文件
+	.CompilerOutputPath = 'Debug'   // .obj文件 输出目录
+	.CompilerInputFiles= {
+		{{ range .ItemGroup }}
+		{{ range .ClCompile }}
+		{{ if .Include }} {{ .Include | Splitett  }} {{ end }}
+		{{ end }}
+		{{ end }}
+	}
+}
+
+Executable('{{ .TName }}')
+{
+    .Libraries          = { '{{ .TName }}_objs'}   // 把idipserver.exe所需的.obj(s)文件和.lib(s)文件链接成.exe文件
+    .LinkerOutput       = '..\..\exe\{{ .TName }}.exe'              // .exe文件输出目录
+	.LinkerOptions      + ' '
+{{ range .ItemDefinitionGroup }}
+{{ if eq .Condition "'$(Configuration)|$(Platform)'=='Debug|Win32'"  }}
+	{{ range .Link }}
+	{{ if .AdditionalDependencies }} {{ .AdditionalDependencies | Splitespace }} {{ end }}
+	{{ end }}
+{{ end }}
+{{ end }}
+}
+
+// 设置all包含的所有目标,执行fbuild.exe的时候,会默认把all下所有的目标都生成一遍,目标之间的依赖关系会被自动推导
+// All
+//------------------------------------------------------------------------------
+Alias( 'all' ) { .Targets = { '{{ .TName }}'} }

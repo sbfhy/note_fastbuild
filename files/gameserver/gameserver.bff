@@ -1,0 +1,4405 @@
+
+// Windows Platform (VS 2015 Compiler, Windows 7.1A SDK)
+//	指定宏
+//------------------------------------------------------------------------------
+.VCInstallDir		= 'D:\software\VS2013\Microsoft Visual Studio 12.0\VC\'
+.WindowsSdkDir		= 'C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\'
+.FrameworkSDKDir	= '$WindowsSdkDir$'
+.WindowsSDK_LibraryPath_x86		= 'C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86\'
+//------------------------------------------------------------------------------
+// 指定开发环境
+//------------------------------------------------------------------------------
+.VSBasePath         = 'D:\software\VS2013\Microsoft Visual Studio 12.0'
+//------------------------------------------------------------------------------
+Settings
+{
+    .Environment    = { "PATH=$VSBasePath$\Common7\IDE\;$VSBasePath$\VC\bin\amd64_x86\",
+                        "TMP=C:\Windows\Temp",
+                        "SystemRoot=C:\Windows" }
+}
+
+// X64 ToolChain
+// 指定具体的工具路径
+//------------------------------------------------------------------------------
+// 编译器
+.Compiler           = '$VSBasePath$\VC\bin\amd64_x86\cl.exe'
+// 编译选项
+.CompilerOptions    = '"%1"'           // Input
+                    + ' /Fo"%2"'       // Output
+                    //+ ' /Z7'           // Debug format (in .obj)
+                    + ' /c'            // Compile only
+                    + ' /nologo '       // No compiler spam
+                    + ' /EHsc /INCREMENTAL'
+					+ ' /GS  /W3 /Zc:wchar_t'
+					+ ' /TP /fp:precise /errorReport:prompt /WX- /Zc:forScope /RTC1 /Gd /Oy-'
+					+ ' /bigobj'
+					+ ' /MDd'
+
+
+	
+	 + ' /D "_SCL_SECURE_NO_WARNINGS"'
++ ' /D "_CRT_SECURE_NO_WARNINGS"'
++ ' /D "WIN32"'
++ ' /D "_DEBUG"'
++ ' /D "_CONSOLE"'
+ 
+	
+
+
+
+
+
+
+
+
+
+// 链接器
+.Linker             = '$VSBasePath$\VC\bin\amd64_x86\link.exe'
+// 链接选项
+.LinkerOptions      = ' /OUT:"%2"'     // Output
+                    + ' "%1"'          // Input
+                    + ' /nologo'       // No linker spam
+                    + ' /DEBUG'        // Keep debug info when linking
+                    + ' /NODEFAULTLIB:libcmt.lib'
+                    + ' /MACHINE:X86'
+					+ ' /DYNAMICBASE "kernel32.lib" "user32.lib" "gdi32.lib" "winspool.lib" "comdlg32.lib" "advapi32.lib" "shell32.lib" "ole32.lib" "oleaut32.lib" "uuid.lib" "odbc32.lib" "odbccp32.lib"'
+
+// 库生成器
+.Librarian          = '$VSBasePath$\VC\bin\amd64_x86\lib.exe'
+// 库生成器选项
+.LibrarianOptions   = '"%1"'
+                    + ' /OUT:"%2"'
+                    + ' /nologo'
+                    + ' /MACHINE:X86'
+
+// 包含目录[常规] -----------------------------------------------------------------------
+.BaseIncludePaths   = ' /I"./"'
+                    + ' /I"$VCInstallDir$include\"'
+                    + ' /I"$VCInstallDir$atlmfc\include\"'
+					+ ' /I"$WindowsSdkDir$include\"'
+					+ ' /I"$FrameworkSDKDir$include\"'
+.CompilerOptions    + .BaseIncludePaths
+
+//	包含目录[附加] -----------------------------------------------------------------------
+.AttachIncludePaths = ' /I"./"'
+
+
+	
+	 + ' /I"../../protocol"'
++ ' /I"../../common/include"'
++ ' /I"../../gameserver/test"'
++ ' /I"../../gameserver/network"'
++ ' /I"../../gameserver/protocol"'
++ ' /I"../../gameserver/pure_module"'
++ ' /I"../../gameserver/"'
++ ' /I"../../thirdparty/tinyxml2"'
++ ' /I"../../thirdparty/protobuf-2.5.0/include"'
++ ' /I"../../share"'
++ ' /I"../../thirdparty/tsf4g_lib/include"'
++ ' /I"../../thirdparty"'
++ ' /I"../../thirdparty/apollo_voice_all/include"'
++ ' /I"../../share/table"'
++ ' /I"../../thirdparty/curl-7.40.0/include"'
++ ' /I"../../thirdparty/toluapp53/include"'
++ ' /I"../../thirdparty/lua-5.3.4/include"'
++ ' /I"../../tolua/common_code/"'
++ ' /I"../../tolua/gs/manual"'
+  
+	
+
+
+
+
+
+
+
+
+.CompilerOptions    + .AttachIncludePaths
+
+// 库目录[常规]
+//------------------------------------------------------------------------------
+.BaseLibPaths       = ' /LIBPATH:"$VCInstallDir$lib\"'
+                    + ' /LIBPATH:"$VCInstallDir$atlmfc\lib\"'
+                    + ' /LIBPATH:"$WindowsSDK_LibraryPath_x86$"'
+.LinkerOptions      + .BaseLibPaths
+
+// 库目录[附加]
+//------------------------------------------------------------------------------
+.AttachLibPaths     = ''
+
+
+	
+	 + ' /LIBPATH:"../../lib"'
++ ' /LIBPATH:"../../thirdparty/mysql/lib/vs12/"'
++ ' /LIBPATH:"../../thirdparty/curl-7.40.0/lib"'
++ ' /LIBPATH:"../../thirdparty/toluapp53/lib"'
++ ' /LIBPATH:"../Debug"'
++ ' /LIBPATH:"../../thirdparty/lua-5.3.4/lib"'
+ 
+	
+
+
+
+
+
+
+
+
+.LinkerOptions      + .AttachLibPaths
+
+
+// 生成libpb.lib
+//Library('pb')
+//{
+	//.CompilerInputPath = 'protocol\pb'        // 源文件所在目录,就是把该目录下所有的.cxx\.c文件编译成库文件
+	//.CompilerInputPattern = '*.cc'
+	//.LibrarianOutput = 'lib\libpb.lib'  // .obj文件 输出目录
+	//.CompilerOutputPath = 'winproject\libpb\Debug'  // 库文件 输出目录
+//}
+
+// 生成idipserver.exe
+ObjectList('gameserver_objs')                 // 生成idipserver所需的objs文件
+{
+    .CompilerInputPath = '.'         // 源文件所在目录,就是把该目录下所有的.cxx\.c文件编译.obj(s)文件
+	.CompilerOutputPath = 'Debug'   // .obj文件 输出目录
+	.CompilerInputFiles= {
+		
+		
+		
+		
+		
+		
+		  "..\..\gameserver\ai\aibehaviortree.cpp"
+ 
+		
+		  "..\..\gameserver\ai\aiconfig.cpp"
+ 
+		
+		  "..\..\gameserver\ai\ainode.cpp"
+ 
+		
+		  "..\..\gameserver\ai\ainodeaction.cpp"
+ 
+		
+		  "..\..\gameserver\ai\ainodecondition.cpp"
+ 
+		
+		  "..\..\gameserver\ai\ainodefactory.cpp"
+ 
+		
+		  "..\..\gameserver\ai\ainodelogic.cpp"
+ 
+		
+		  "..\..\gameserver\ai\ainodemove.cpp"
+ 
+		
+		  "..\..\gameserver\ai\ainodeskill.cpp"
+ 
+		
+		  "..\..\gameserver\ai\ainodetarget.cpp"
+ 
+		
+		  "..\..\gameserver\ai\aionlinedebugmgr.cpp"
+ 
+		
+		  "..\..\gameserver\ai\aiscenehandler.cpp"
+ 
+		
+		  "..\..\gameserver\ai\aitreemgr.cpp"
+ 
+		
+		  "..\..\gameserver\ai\sysnode.cpp"
+ 
+		
+		  "..\..\gameserver\anticheat\anticheat.cpp"
+ 
+		
+		  "..\..\gameserver\apollovoice\ApolloVoiceMgr.cpp"
+ 
+		
+		  "..\..\gameserver\auction\auctionrequest.cpp"
+ 
+		
+		  "..\..\gameserver\auction\auctiontypehandler.cpp"
+ 
+		
+		  "..\..\gameserver\auction\guildauctrequest.cpp"
+ 
+		
+		  "..\..\gameserver\broadcast\broadcast.cpp"
+ 
+		
+		  "..\..\gameserver\buff\buffrecord.cpp"
+ 
+		
+		  "..\..\gameserver\buff\transbuff.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuff.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffAddSkillQte.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffAttackRecoveryHp.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffAuraCheck.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffChangeAttribute.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffChangeFightGroup.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffChangeSkillsAttackSpeed.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffCharge.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffClear.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffDamageDistanceScale.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffDamageReflection.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffKill.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffKillSelfMob.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffLifeAddAttack.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffLifeSteal.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffManipulate.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffMob.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffReduceDamage.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffReduceSkillCD.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffRegenerate.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffShareDamage.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffSkillsActive.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffSkillsReplace.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffSpecialState.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTargetLifeAddAttack.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTemplateManager.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTraveller.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTrigger.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerAlways.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerByAttributePoints.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerByBeHit.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerByCastSkill.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerByCombo.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerByDeath.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerByHit.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerByLife.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerByStacking.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerNearbyMates.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerByQTE.cpp"
+ 
+		
+		  "..\..\gameserver\buff\XBuffTriggerWhenRemove.cpp"
+ 
+		
+		  "..\..\gameserver\camp\camprecord.cpp"
+ 
+		
+		  "..\..\gameserver\component\XActionReceiver.cpp"
+ 
+		
+		  "..\..\gameserver\component\XActionSender.cpp"
+ 
+		
+		  "..\..\gameserver\component\XAIComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XBeHitComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XBuffComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XChargeComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XDeathComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XFlyComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XFreezeComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XGravityComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XIdleComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XMoveComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XNavigationComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XNetComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XManipulationComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XPresentComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XQuickTimeEventComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XRotationComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XSkillComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XSuperArmorComponent.cpp"
+ 
+		
+		  "..\..\gameserver\component\XWoozyComponent.cpp"
+ 
+		
+		  "..\..\gameserver\config.cpp"
+ 
+		
+		  "..\..\gameserver\db\mysqlmgr.cpp"
+ 
+		
+		  "..\..\gameserver\dragonguild\dragonguild.cpp"
+ 
+		
+		  "..\..\gameserver\dragonguild\dragonguildmgr.cpp"
+ 
+		
+		  "..\..\gameserver\dragonguild\dragonguildrecord.cpp"
+ 
+		
+		  "..\..\gameserver\duel\duelmgr.cpp"
+ 
+		
+		  "..\..\gameserver\duel\duelrecord.cpp"
+ 
+		
+		  "..\..\gameserver\entity\XActionDefine.cpp"
+ 
+		
+		  "..\..\gameserver\entity\XDummyRole.cpp"
+ 
+		
+		  "..\..\gameserver\entity\XEnemy.cpp"
+ 
+		
+		  "..\..\gameserver\entity\XEntity.cpp"
+ 
+		
+		  "..\..\gameserver\entity\XGlobalAIObject.cpp"
+ 
+		
+		  "..\..\gameserver\entity\XObject.cpp"
+ 
+		
+		  "..\..\gameserver\entity\XRole.cpp"
+ 
+		
+		  "..\..\gameserver\event\eventmgr.cpp"
+ 
+		
+		  "..\..\gameserver\findback\findbackconfig.cpp"
+ 
+		
+		  "..\..\gameserver\findback\findbackrecord.cpp"
+ 
+		
+		  "..\..\gameserver\findback\itemfindback.cpp"
+ 
+		
+		  "..\..\gameserver\findback\itemfindbackbase.cpp"
+ 
+		
+		  "..\..\gameserver\findback\miscfindback.cpp"
+ 
+		
+		  "..\..\gameserver\findback\nestfindback.cpp"
+ 
+		
+		  "..\..\gameserver\findback\totalsinglefindback.cpp"
+ 
+		
+		  "..\..\gameserver\findback\towerfindback.cpp"
+ 
+		
+		  "..\..\gameserver\follower\followermgr.cpp"
+ 
+		
+		  "..\..\gameserver\follower\followerrecord.cpp"
+ 
+		
+		  "..\..\gameserver\follower\followermonsterlistener.cpp"
+ 
+		
+		  "..\..\gameserver\forbid\forbidwordmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\abysspartymgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\achievementhandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\AchievementInBattle.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\AchievementInBattleMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\achievev2Mgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\achievev2Record.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\AchivementActivityManager.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\AchivementHandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\AchivementMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\activityhandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\activityrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\antiaddiction.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\antiaddictionmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\artifactconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\artifactmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\attrmodmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\authenticmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\battlefieldgsmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\battlefieldrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\changeprofession.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\changeprofessionrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\charmconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\charmrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\combateffect.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\competedragonconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\competedragonrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dailydungeonrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dailytaskrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\allyskill.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\arenahistory.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\arenamgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\arenarecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\arenarewardmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\atlas.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\atlasconfigmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\bag.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\baglistener.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\bagtransition.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\bossrushmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\buyexchangemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\buyrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\chatcondition.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\chathandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\chatmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\chatrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\checkinmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\checkinrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\decompose.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\designationMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\designationRecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonexpbase.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragongroupmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragongrouprecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonhelpconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonremotemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonsecretareaconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonsecretareamgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonsecretarearecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonsoulmanager.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\dragonsoulrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\effectconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\emblemmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\enchantmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\enemyskill.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\enhanceequipmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\enterhallmanager.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\equiplevelupmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\equipreforgemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\equipremoulemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\fashionmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\FatigueMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\fightgroup.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\firstpassconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\firstpassmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\firstpassrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\flower.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\flowerrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\fusemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\GachaConfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\GachaRecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\game_role_module.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\gmhandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\goalaward.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\halliconmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\helldoordropmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\herobattlemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\herobattlerecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\holidaystage.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\horsemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\ibshopmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\ibshoprecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\item.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\itembrief.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\itemconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\itemsuffix.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\jademgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\killerwatcher.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\LeagueMatchParamMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\levelsealMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\levelsealRecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\loginactivity.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\loginrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\LotteryMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\lotteryrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\matchhandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\mechaconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\mecharecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\midas.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\military_rank_manager.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\military_rank_record.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\mobabattlemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\msusesummarymgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\MultActivityMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\nestconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\notice.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\noticemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\onlinereward.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\opensystemhandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\operatingactivity.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\paychesthandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\paychestmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\paychestrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\payconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\payconsumemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\payrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\payscore.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\payv2Mgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\payv2Record.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\perioddesi.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\PersonalCareerQuest.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\pkmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\pkopenmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\pkrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\platformshare_record.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\popwndows.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\principfight.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\psychicmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\pvpbasedata.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\pvpmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\pvprecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\pvprequest.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\QAMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\QARecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\qqviprecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\randomattrmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\randombossmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\randomnamemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\RandomTaskCondition.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\RandomTaskConfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\activitymgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rand_boss_record.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\reloadmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\reportdatahandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\reportdatamgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\reportdatarecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rewardhandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rewardmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rewardrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\robotconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\robotcreatestep.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\robotgenerator.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rolecommonhandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rolefashion.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rolefashiontimer.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\roleluahandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rolemisc.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rolenethandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rolepartner.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rolepushinforecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rolesummary.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rolesummaryhandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\rolesummarymgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\role_refresh_mgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\scene_roll.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\shop.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\shopcondition.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\shoprecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\skillchangedrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\skilllevel.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\SpawnSourceHandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\sprite.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\spriteconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\spriterecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\spritetransition.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\stageassist.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\stagemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\stagerankmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\stagereward.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\stardragonmanager.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\superrisk.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\superriskconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\superriskmap.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\superriskrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\syncskill.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\tajiehelpconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\tajiehelprecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\takecostmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\tarjamgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\taskaux.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\taskhelper.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\taskrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\team.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teamattrmodifymgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teamcostconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teamhandler.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teamhelperinvite.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teaminvitemgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teammember.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teammgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teamrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teamrequest.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teamreward.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\teamsynextradata.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\titleconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\titlerecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\towerconfig.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\towerrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\tshow.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\tshowrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\weekend4v4mgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\weekend4v4record.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\weeklytaskrecord.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\worldbankmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\worldlevelmgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\XCombat.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\XEnmityList.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\XEscape.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\XLevelSpawnMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\XLevelScriptMgr.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\XLevelTask.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\XLevelWave.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\XLoiter.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\XPatrol.cpp"
+ 
+		
+		  "..\..\gameserver\gamelogic\XSpawnInfoGenerator.cpp"
+ 
+		
+		  "..\..\gameserver\garden\garden_event.cpp"
+ 
+		
+		  "..\..\gameserver\guild\gmfbase.cpp"
+ 
+		
+		  "..\..\gameserver\guild\guild.cpp"
+ 
+		
+		  "..\..\gameserver\guild\guildboss.cpp"
+ 
+		
+		  "..\..\gameserver\guild\guildcampparty.cpp"
+ 
+		
+		  "..\..\gameserver\guild\guildchat.cpp"
+ 
+		
+		  "..\..\gameserver\guild\guildconfig.cpp"
+ 
+		
+		  "..\..\gameserver\guild\guildinherit.cpp"
+ 
+		
+		  "..\..\gameserver\guild\guildmgr.cpp"
+ 
+		
+		  "..\..\gameserver\guild\guildrecord.cpp"
+ 
+		
+		  "..\..\gameserver\hidingcat\HidCatMgr.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\getconf.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\getuserinfo.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\httptaskmgr.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\personalcareerinfo.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\personalcareerrank.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\pushendgame.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\queryplatformsharechestid.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\queryqqfriendsviptask.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\queryqqviprichtask.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\queryqqviptask.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\querywebchatsharechestid.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\queryxinyueleveltask.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\reportdata.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\reportreminded.cpp"
+ 
+		
+		  "..\..\gameserver\httptask\updateuserinfo.cpp"
+ 
+		
+		  "..\..\gameserver\idip\banplay_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\consumetogame_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\delitem_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\doidipred_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\doxinyuered_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\idipcmdproc.cpp"
+ 
+		
+		  "..\..\gameserver\idip\idiprecord.cpp"
+ 
+		
+		  "..\..\gameserver\idip\itemchange_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\nameact_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\querybagitem_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\querybag_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\queryemblem_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\queryfashioncompose_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\queryfashion_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\queryhorseinfo_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\queryitem_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\queryroleinfo_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\queryspriteinfo_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\relievepunish_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\resumeequip_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\UpdateAchieve_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\updatearenacoin_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\updatediamond_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\updatedragoncoin_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\updateexp_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\updatefatigue_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\updategold_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\updatename_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\updatescore_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\updatetowerfloor_handler.cpp"
+ 
+		
+		  "..\..\gameserver\idip\zeroprofit_handler.cpp"
+ 
+		
+		  "..\..\gameserver\inscription\inscription_cfg.cpp"
+ 
+		
+		  "..\..\gameserver\inscription\inscription_mgr.cpp"
+ 
+		
+		  "..\..\gameserver\inscription\inscription_record.cpp"
+ 
+		
+		  "..\..\gameserver\live\liveconfig.cpp"
+ 
+		
+		  "..\..\gameserver\live\liveinfo.cpp"
+ 
+		
+		  "..\..\gameserver\live\livemanager.cpp"
+ 
+		
+		  "..\..\gameserver\live\liverecord.cpp"
+ 
+		
+		  "..\..\gameserver\luamgr\luamgr.cpp"
+ 
+		
+		  "..\..\gameserver\mail\mailconfig.cpp"
+ 
+		
+		  "..\..\gameserver\mail\mailsender.cpp"
+ 
+		
+		  "..\..\gameserver\main.cpp"
+ 
+		
+		  "..\..\gameserver\math\XVector3.cpp"
+ 
+		
+		  "..\..\gameserver\network\controllink.cpp"
+ 
+		
+		  "..\..\gameserver\network\gatelink.cpp"
+ 
+		
+		  "..\..\gameserver\network\dblink.cpp"
+ 
+		
+		  "..\..\gameserver\network\loglink.cpp"
+ 
+		
+		  "..\..\gameserver\network\mslink.cpp"
+ 
+		
+		  "..\..\gameserver\network\rslink.cpp"
+ 
+		
+		  "..\..\gameserver\network\weblink.cpp"
+ 
+		
+		  "..\..\gameserver\network\worldlink.cpp"
+ 
+		
+		  "..\..\gameserver\nig\nightmareconfig.cpp"
+ 
+		
+		  "..\..\gameserver\nig\rolenightmarececord.cpp"
+ 
+		
+		  "..\..\gameserver\npcfeeling\npcfeelingmgr.cpp"
+ 
+		
+		  "..\..\gameserver\npcfeeling\npcfeelingrecord.cpp"
+ 
+		
+		  "..\..\gameserver\other\roleworldbrief.cpp"
+ 
+		
+		  "..\..\gameserver\photo\photo_manager.cpp"
+ 
+		
+		  "..\..\gameserver\physics\XPhysics.cpp"
+ 
+		
+		  "..\..\gameserver\process.cpp"
+ 
+		
+		  "..\..\gameserver\profile\gsprofiler.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\achievement\rpcc2g_getachieverewardreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_getactivitychest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpcc2g_inspirereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcn2g_newgateconnected.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptct2g_registserverntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\enhance\rpcc2g_enhanceitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\item\rpcc2g_relieveitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\lottery\rpcc2g_goldclick.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcm2g_changenamegs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcg2n_changesceneverify.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcn2g_createbattle.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcn2g_enterscene.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcn2g_leavescene.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\sendonly.cpp"
+ 
+		
+		  "..\..\gameserver\ptcregister.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\battle_pass\battle_pass_handler.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\battle_pass\battle_pass_mgr.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\battle_pass\battle_pass_record.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\battle_pass\battle_pass_task_mgr.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\dragon\pure_dragonrecord.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\new_task\new_task_mgr.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\new_task\task_base.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\new_task\task_condition.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\new_task\task_cond_node.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\new_task\task_record.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\season\pure_season_mgr.cpp"
+ 
+		
+		  "..\..\gameserver\pure_module\season\pure_season_record.cpp"
+ 
+		
+		  "..\..\gameserver\retrievereward\retrieveRewardMgr.cpp"
+ 
+		
+		  "..\..\gameserver\retrievereward\retrieveRewardRecord.cpp"
+ 
+		
+		  "..\..\gameserver\rift\riftmgr.cpp"
+ 
+		
+		  "..\..\gameserver\rift\riftrecord.cpp"
+ 
+		
+		  "..\..\gameserver\roleversion\roleversion.cpp"
+ 
+		
+		  "..\..\gameserver\scene\aimsgchannel.cpp"
+ 
+		
+		  "..\..\gameserver\scene\attributepk.cpp"
+ 
+		
+		  "..\..\gameserver\scene\battlefieldfight.cpp"
+ 
+		
+		  "..\..\gameserver\scene\battlefieldready.cpp"
+ 
+		
+		  "..\..\gameserver\scene\battleresultlistener.cpp"
+ 
+		
+		  "..\..\gameserver\scene\bigmeleefight.cpp"
+ 
+		
+		  "..\..\gameserver\scene\bigmeleeready.cpp"
+ 
+		
+		  "..\..\gameserver\scene\collid.cpp"
+ 
+		
+		  "..\..\gameserver\scene\DragonExpConfig.cpp"
+ 
+		
+		  "..\..\gameserver\scene\enterscenecondition.cpp"
+ 
+		
+		  "..\..\gameserver\scene\grid.cpp"
+ 
+		
+		  "..\..\gameserver\scene\gridcollid.cpp"
+ 
+		
+		  "..\..\gameserver\scene\leaguebattlebase.cpp"
+ 
+		
+		  "..\..\gameserver\scene\leavescenecontrol.cpp"
+ 
+		
+		  "..\..\gameserver\scene\linehandler.cpp"
+ 
+		
+		  "..\..\gameserver\scene\positiondebugmgr.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scene.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenebase.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenebossrush.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenecastle.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenecollid.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenecompetedragon.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneconfig.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenecustomlogger.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenecustompk.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenecustompktwo.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenedfdj.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenedoodad.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenedragon.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneduel.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenefinder.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenefinishcb.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenegarden.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenegcf.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneglf.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenegmf.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenegpr.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenegroup.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenegroupline.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneguildcamp.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenegwb.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenehandler.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneherobattle.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenehidingcat.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenehorse.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenehorserace.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneinherit.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneinspire.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneinvfight.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenekillinfo.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneleague.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneleisureconfig.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneline.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenelovehugfight.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenelovehugready.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenemanager.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenemarriageinfo.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenemobabattle.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenemobainfo.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenemorphinfo.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenemortuary.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenenewboss.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenenig.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenepk.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenepkbase.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenepktwo.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneprincipfight.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneprofchallenge.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenereswar.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenereswarpve.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenerift.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenerogue.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneskycity.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneskycitywait.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenestatistics.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenesurvive.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenetransctrl.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenetransconfig.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneviewline.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenevsbase.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenepreparelist.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenepvp.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenerisk.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenesecurityzone.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneswitch.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneteam.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenetower.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneupdatehandler.cpp"
+ 
+		
+		  "..\..\gameserver\scene\scenewedding.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneweekend4v4base.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneweekend4v4crazybomb.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneweekend4v4duck.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneweekend4v4ghostaction.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneweekend4v4horseracing.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneweekend4v4livechallenge.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneweekend4v4monsterfight.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneworldboss.cpp"
+ 
+		
+		  "..\..\gameserver\scene\sceneznzb.cpp"
+ 
+		
+		  "..\..\gameserver\scene\securityaistatistics.cpp"
+ 
+		
+		  "..\..\gameserver\scene\securityattributestatistics.cpp"
+ 
+		
+		  "..\..\gameserver\scene\securitybuffstatistics.cpp"
+ 
+		
+		  "..\..\gameserver\scene\securitydamagestatistics.cpp"
+ 
+		
+		  "..\..\gameserver\scene\securitymobstatistics.cpp"
+ 
+		
+		  "..\..\gameserver\scene\securityscenestatistics.cpp"
+ 
+		
+		  "..\..\gameserver\scene\securityskillstatistics.cpp"
+ 
+		
+		  "..\..\gameserver\scene\securitystatistics.cpp"
+ 
+		
+		  "..\..\gameserver\scene\teleportdoor.cpp"
+ 
+		
+		  "..\..\gameserver\scene\unitcollid.cpp"
+ 
+		
+		  "..\..\gameserver\scene\vshandler.cpp"
+ 
+		
+		  "..\..\gameserver\scene\vsscenerecord.cpp"
+ 
+		
+		  "..\..\gameserver\scene\vsstate.cpp"
+ 
+		
+		  "..\..\gameserver\scene\waypoint.cpp"
+ 
+		
+		  "..\..\gameserver\scene\waypointmgr.cpp"
+ 
+		
+		  "..\..\gameserver\servermgr\servercrossdatamgr.cpp"
+ 
+		
+		  "..\..\gameserver\servermgr\servermgr.cpp"
+ 
+		
+		  "..\..\gameserver\skill\Player_academic_buff_fuhuo.cpp"
+ 
+		
+		  "..\..\gameserver\skill\Player_assassin_dash.cpp"
+ 
+		
+		  "..\..\gameserver\skill\Player_cleric_attack_chongjizhishou.cpp"
+ 
+		
+		  "..\..\gameserver\skill\Player_cleric_attack_chongjizhishou_ex.cpp"
+ 
+		
+		  "..\..\gameserver\skill\Player_warrior_charge.cpp"
+ 
+		
+		  "..\..\gameserver\skill\Player_warrior_dash_start.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XArtsSkill.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XBullet.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XBulletCore.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XBulletMgr.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XCombinedSkill.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XJAComboSkill.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XRandomSkill.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XSkill.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XSkillCore.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XSkillMgr.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XSkillScriptMgr.cpp"
+ 
+		
+		  "..\..\gameserver\skill\XUltraSkill.cpp"
+ 
+		
+		  "..\..\gameserver\spactivity\beiye_cfg.cpp"
+ 
+		
+		  "..\..\gameserver\spactivity\spactivitybase.cpp"
+ 
+		
+		  "..\..\gameserver\spactivity\spactivityconfig.cpp"
+ 
+		
+		  "..\..\gameserver\spactivity\spactivitydatabase.cpp"
+ 
+		
+		  "..\..\gameserver\spactivity\spactivitydatasmall.cpp"
+ 
+		
+		  "..\..\gameserver\spactivity\spactivityhandler.cpp"
+ 
+		
+		  "..\..\gameserver\spactivity\spactivitymgr.cpp"
+ 
+		
+		  "..\..\gameserver\spactivity\spactivityrecord.cpp"
+ 
+		
+		  "..\..\gameserver\spactivity\spactivitysmall.cpp"
+ 
+		
+		  "..\..\gameserver\spactivity\spactivitytask.cpp"
+ 
+		
+		  "..\..\gameserver\state\XStateMachine.cpp"
+ 
+		
+		  "..\..\gameserver\table\backflowbuyconfig.cpp"
+ 
+		
+		  "..\..\gameserver\table\ChannelCloseSys.cpp"
+ 
+		
+		  "..\..\gameserver\table\CombatParamMgr.cpp"
+ 
+		
+		  "..\..\gameserver\table\CurveReader.cpp"
+ 
+		
+		  "..\..\gameserver\table\CutSceneReader.cpp"
+ 
+		
+		  "..\..\gameserver\table\DailyDungeonConfig.cpp"
+ 
+		
+		  "..\..\gameserver\table\doodaditemskillconfig.cpp"
+ 
+		
+		  "..\..\gameserver\table\CDragonSoulConfig.cpp"
+ 
+		
+		  "..\..\gameserver\table\EquipAuthenticateBackMgr.cpp"
+ 
+		
+		  "..\..\gameserver\table\InspireConfig.cpp"
+ 
+		
+		  "..\..\gameserver\table\ohmygodmgr.cpp"
+ 
+		
+		  "..\..\gameserver\table\OpenSystemMgr.cpp"
+ 
+		
+		  "..\..\gameserver\table\PlayerLevelManager.cpp"
+ 
+		
+		  "..\..\gameserver\table\PowerPointMgr.cpp"
+ 
+		
+		  "..\..\gameserver\table\ProfessionMgr.cpp"
+ 
+		
+		  "..\..\gameserver\table\PushTableConfig.cpp"
+ 
+		
+		  "..\..\gameserver\table\CRandBossConfig.cpp"
+ 
+		
+		  "..\..\gameserver\table\SkillReader.cpp"
+ 
+		
+		  "..\..\gameserver\table\spactivitybuyconfig.cpp"
+ 
+		
+		  "..\..\gameserver\table\TableCmd.cpp"
+ 
+		
+		  "..\..\gameserver\table\TaskMgr.cpp"
+ 
+		
+		  "..\..\gameserver\table\XSkillEffectMgr.cpp"
+ 
+		
+		  "..\..\gameserver\test.cpp"
+ 
+		
+		  "..\..\gameserver\test\testregister.cpp"
+ 
+		
+		  "..\..\gameserver\tsssdk\TssHandler.cpp"
+ 
+		
+		  "..\..\gameserver\unit\accountsessionmgr.cpp"
+ 
+		
+		  "..\..\gameserver\unit\dummyrole.cpp"
+ 
+		
+		  "..\..\gameserver\unit\dummyrolemanager.cpp"
+ 
+		
+		  "..\..\gameserver\unit\attributewatcher.cpp"
+ 
+		
+		  "..\..\gameserver\unit\calcattribute.cpp"
+ 
+		
+		  "..\..\gameserver\unit\combatattrdef.cpp"
+ 
+		
+		  "..\..\gameserver\unit\combatattribute.cpp"
+ 
+		
+		  "..\..\gameserver\unit\combatstatistics.cpp"
+ 
+		
+		  "..\..\gameserver\unit\enemy.cpp"
+ 
+		
+		  "..\..\gameserver\unit\enemymanager.cpp"
+ 
+		
+		  "..\..\gameserver\unit\globalaiunit.cpp"
+ 
+		
+		  "..\..\gameserver\unit\passwordprotect.cpp"
+ 
+		
+		  "..\..\gameserver\unit\pet.cpp"
+ 
+		
+		  "..\..\gameserver\unit\petconfigmgr.cpp"
+ 
+		
+		  "..\..\gameserver\unit\poskeeper.cpp"
+ 
+		
+		  "..\..\gameserver\unit\role.cpp"
+ 
+		
+		  "..\..\gameserver\unit\rolecallback.cpp"
+ 
+		
+		  "..\..\gameserver\unit\roleinfoinit.cpp"
+ 
+		
+		  "..\..\gameserver\unit\rolemanager.cpp"
+ 
+		
+		  "..\..\gameserver\unit\roleoutlook.cpp"
+ 
+		
+		  "..\..\gameserver\unit\rolepartcallback.cpp"
+ 
+		
+		  "..\..\gameserver\unit\roleview.cpp"
+ 
+		
+		  "..\..\gameserver\unit\saveroledatatimer.cpp"
+ 
+		
+		  "..\..\gameserver\unit\selectrolestatemgr.cpp"
+ 
+		
+		  "..\..\gameserver\unit\systeminfo.cpp"
+ 
+		
+		  "..\..\gameserver\unit\unit.cpp"
+ 
+		
+		  "..\..\gameserver\unit\unitcondition.cpp"
+ 
+		
+		  "..\..\gameserver\utility\loghelper.cpp"
+ 
+		
+		  "..\..\gameserver\utility\tlogger.cpp"
+ 
+		
+		  "..\..\gameserver\utility\tloggerbattle.cpp"
+ 
+		
+		  "..\..\gameserver\utility\tlogmgr.cpp"
+ 
+		
+		  "..\..\gameserver\utility\uidhelper.cpp"
+ 
+		
+		  "..\..\gameserver\utility\UtilMath.cpp"
+ 
+		
+		  "..\..\gameserver\utility\XActionCurve.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcc2g_enterscenereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcc2g_leavescenereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_synctime.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\action\ptcc2g_moveoperationreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\skill\ptcc2g_castskill.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\skill\rpcc2g_skilllevelup.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcc2g_updatetutorial.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_fetchachivementreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpcc2g_selectchestreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\skill\rpcc2g_resetskill.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcc2g_chooseprofession.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\skill\rpcc2g_bindskill.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcc2g_taskoperate.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\lottery\rpcc2g_querylotterycd.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\lottery\rpcc2g_drawlottery.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_queryscenedaycount.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_gmcommand.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\enhance\rpcc2g_decomposeequipment.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\emblem\rpcc2g_emblemlevelup.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_useitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_jadeoperation.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_jadecompose.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\checkin\rpcc2g_checkin.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\fashion\rpcc2g_fashioncompose.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_buyjadeslot.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\reward\rpcc2g_getsystemreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpcc2g_sweep.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpcc2g_revive.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\shop\rpcc2g_queryshopitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\shop\rpcc2g_buyshopitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_buygoldandfatigue.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\ptcc2g_roledeathinsoloscene.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_addtempattr.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcc2g_enterscenecooldownquery.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcm2g_gmcontrol.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_queryopengameactivitytime.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcc2g_operaterecordntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\social\rpcc2g_showflowerpage.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\social\rpcc2g_sendflower.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_fetchchapterchest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_startguildcard.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_queryguildcard.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_changeguildcard.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_endguildcard.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_getguildcheckinbox.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_stagecountreset.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_getguildbonuslist.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_getguildbonusdetailinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_getguildbonusreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_openscenechest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_reportbattle.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\reward\rpcc2g_getonlinereward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\reward\rpcc2g_getnextdayreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\reward\ptcc2g_onlinerewardreport.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\reward\ptcc2g_nextdayrewardreport.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpcc2g_fetchenemydoodadreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcc2g_delaynotify.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\skill\ptcc2g_skillresultreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\skill\ptcc2g_skillbulletfirereport.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\skill\ptcc2g_skillbulletresultreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_guildgoblininfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcc2g_addlevelscriptextstring.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcc2g_scenedamagerankreport.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\login\ptct2g_reconnectntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\item\ptcc2g_changesupplementreport.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\item\rpcc2g_usesupplement.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_setroleconfig.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcc2g_qteoperation.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\slotattr\rpcc2g_levelupslotattr.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pet\rpcc2g_petoperation.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcc2g_buyteamscenecount.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\findback\rpcc2g_expfindback.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\ptcc2g_autofightntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_gettoweractivitytop.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\designation\rpcc2g_getdesignationreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\designation\rpcc2g_setdesignationreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\designation\rpcc2g_getclassifydesignationreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\achievement\rpcc2g_getachievebrifinforeq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\achievement\rpcc2g_getachieveclassifyinforeq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpcc2g_reqplayerautoplay.cpp"
+ 
+		
+		  "..\..\share\appid.cpp"
+ 
+		
+		  "..\..\share\common\xsafe.cpp"
+ 
+		
+		  "..\..\share\config\duelconfig.cpp"
+ 
+		
+		  "..\..\share\config\hidingcatconfig.cpp"
+ 
+		
+		  "..\..\share\config\itemdropconfig.cpp"
+ 
+		
+		  "..\..\share\config\pandoraconfig.cpp"
+ 
+		
+		  "..\..\share\DBInfo.cpp"
+ 
+		
+		  "..\..\share\define\itemdef.cpp"
+ 
+		
+		  "..\..\share\guild\guildcardmgr.cpp"
+ 
+		
+		  "..\..\share\HashUtil.cpp"
+ 
+		
+		  "..\..\share\idip\idiperrdesc.cpp"
+ 
+		
+		  "..\..\share\idip\idiphandler.cpp"
+ 
+		
+		  "..\..\share\profile\profiler.cpp"
+ 
+		
+		  "..\..\share\reload\reloadkey.cpp"
+ 
+		
+		  "..\..\share\reportdata\reportdatabase.cpp"
+ 
+		
+		  "..\..\share\reswar\reswarpvemgr.cpp"
+ 
+		
+		  "..\..\share\rolesummary\rolesummarybase.cpp"
+ 
+		
+		  "..\..\share\script\luastate.cpp"
+ 
+		
+		  "..\..\share\season\pure_season_config.cpp"
+ 
+		
+		  "..\..\share\serverinfo\servercrossdatamgrbase.cpp"
+ 
+		
+		  "..\..\share\skycitycfg\skycityconfig.cpp"
+ 
+		
+		  "..\..\share\tablemgr\backflowtablemgr.cpp"
+ 
+		
+		  "..\..\share\tablemgr\dragonguildtablemgr.cpp"
+ 
+		
+		  "..\..\share\tablemgr\marriageconfig.cpp"
+ 
+		
+		  "..\..\share\tablemgr\marriagetablemgr.cpp"
+ 
+		
+		  "..\..\share\tablemgr\multireward.cpp"
+ 
+		
+		  "..\..\share\tablemgr\partnertablemgr.cpp"
+ 
+		
+		  "..\..\share\tablemgr\paychestconfig.cpp"
+ 
+		
+		  "..\..\share\tablemgr\prerogativemgr.cpp"
+ 
+		
+		  "..\..\share\tablemgr\riftconfig.cpp"
+ 
+		
+		  "..\..\share\tablemgr\skycrafttablemgr.cpp"
+ 
+		
+		  "..\..\share\tablemgr\XEntityInfoLibrary.cpp"
+ 
+		
+		  "..\..\share\table\expeditionconfigmgr.cpp"
+ 
+		
+		  "..\..\share\table\followerconfig.cpp"
+ 
+		
+		  "..\..\share\table\globalconfig.cpp"
+ 
+		
+		  "..\..\share\table\globalpureseasonload.cpp"
+ 
+		
+		  "..\..\share\table\mayhemconfig.cpp"
+ 
+		
+		  "..\..\share\table\MultActivityMgrBase.cpp"
+ 
+		
+		  "..\..\share\table\pureseasonload.cpp"
+ 
+		
+		  "..\..\share\team\teamcommon.cpp"
+ 
+		
+		  "..\..\share\test\testmgr.cpp"
+ 
+		
+		  "..\..\share\tlogwriter.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcc2g_syncscenefinish.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\levelseal\rpcc2g_getlevelsealinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\levelseal\rpcc2g_levelsealbuttonstatus.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\achievement\rpcc2g_getachievepointrewardreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\reward\rpcc2g_reqgetloginreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\reward\rpcc2g_fivedayrewardreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_guildcheckinbonusinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_sendguildbonus.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_askforcheckinbonus.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_thanksforbonus.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pvp\rpcc2g_pvpallreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\tsssdk\ptcc2g_tsssdksendanti2server.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qa\rpcc2g_agreeqareq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\social\rpcc2g_getflowerlefttime.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\social\rpcc2g_getflower.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\social\rpcc2g_getflowerreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\social\rpcc2g_getflowerrewardlist.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_enhancetranster.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pvp\rpcc2g_pvpnowalldata.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\ptcc2g_fmbrefuse.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragon\rpcc2g_getdragontopinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcg2m_registergs2ms.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcc2g_teaminvitelistreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcg2t_registergs2gt.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpct2g_registergt2gs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcg2d_saveroledata.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\emblem\rpcc2g_identifyemblem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qa\rpcc2g_openguildqareq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qa\rpcc2g_getguildqadatareq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_mulactivityreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlewatch\rpcc2g_getwatchinfobyid.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlewatch\rpcc2g_getmywatchrecord.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlewatch\rpcc2g_enterwatchbattle.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlewatch\rpcc2g_changewatchrole.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlewatch\rpcc2g_commendwatchbattle.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_bossrushreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_doenterscene.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_takeoffalljade.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_sweeptower.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_resettower.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\gm\rpcm2g_gshttpcommandnew.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\goddesstrial\rpcc2g_getgoddesstrialrewards.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\designation\ptcd2g_d2gdesignationntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\chat\rpcm2g_chatcansend.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlewatch\rpcg2m_getwatchinfobytype.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlewatch\rpcg2m_enterwatchbattlems.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\levelseal\rpcg2m_inclevelsealbosscount.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\levelseal\ptcm2g_mslevelsealntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcm2g_noticeguildbossendtogsn.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\friend\ptcm2g_updatefriendongs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_noticeguildbossdoendtogsn.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlewatch\ptcm2g_notifywatchiconnum.cpp"
+ 
+		
+		  "..\..\share\tsssdk\tss_sdk_import.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_querypowerpoint.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcm2g_synscenerewardm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_changeguildbosstime.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\worldboss\ptcm2g_worldbosssyncgs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\chat\ptcc2g_joinroom.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\chat\ptcc2g_quitroom.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_getpayallinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_paycardaward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_payclick.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_getactivityinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\social\rpcg2m_msgetflwoerrankreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcm2g_teamsynm2c.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcm2g_teamstartbattlem2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcm2g_teamrequestm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\social\rpcg2m_mssendflower.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\social\rpcm2g_getflowerrewardstate.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pet\rpcc2g_synpetinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_payfirstaward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_growthfundaward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_buyviplevelgift.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpcc2g_chooserollreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\title\rpcc2g_titlelevelup.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\firstpass\rpcc2g_firstpassinforeq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\firstpass\rpcc2g_getfirstpassreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\firstpass\rpcc2g_commendfirstpass.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\firstpass\rpcg2m_mscommendfirstpass.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\firstpass\rpcc2g_firstpassgettoproleinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\firstpass\rpcg2m_getrankinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pvp\rpcg2m_pvpallg2mreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcg2m_gmcommandg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcm2g_msusesummaryreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcm2g_teamchangeexpcheck.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\ranklist\rpcg2m_updatemsranklist.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\firstpass\ptcm2g_firstpassnewcommendrewardntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pk\rpcg2m_pkrankreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pk\rpcm2g_pkreqm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_createguildcost.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\auction\rpcm2g_auctionallm2greq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_synroleinguild.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_enterguildpower.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcc2g_changeoutlookop.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\findback\rpcc2g_itemfindbackinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\findback\rpcc2g_itemfindback.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\ptcm2g_synguildinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\atlas\rpcc2g_activatatlas.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\atlas\rpcc2g_autobreakatlas.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\atlas\rpcc2g_breakatlas.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\ibshop\rpcc2g_buyibitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\ibshop\rpcc2g_queryibitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\sprite\rpcc2g_spriteoperation.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_deprogressreq.cpp"
+ 
+		
+		  "..\..\share\utildb\roledatafields.cpp"
+ 
+		
+		  "..\..\share\util\express.cpp"
+ 
+		
+		  "..\..\share\util\gametime.cpp"
+ 
+		
+		  "..\..\share\util\gettimeofday.cpp"
+ 
+		
+		  "..\..\share\util\jsonutil.cpp"
+ 
+		
+		  "..\..\share\util\ManagerModuleManager.cpp"
+ 
+		
+		  "..\..\share\util\timespecificmgr.cpp"
+ 
+		
+		  "..\..\share\util\UtilEncode.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\superrisk\rpcc2g_getriskmapinfos.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\superrisk\rpcc2g_playdicerequest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\superrisk\ptcc2g_playdiceover.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\superrisk\rpcc2g_changeriskboxstate.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\superrisk\rpcc2g_reenterriskbattle.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\levelseal\rpcc2g_levelsealexchange.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\ibshop\ptcc2g_removeibshopicon.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\superrisk\rpcc2g_playdiceover.cpp"
+ 
+		
+		  "..\..\share\util\XCommon.cpp"
+ 
+		
+		  "..\..\share\util\XModule.cpp"
+ 
+		
+		  "..\..\share\util\XModuleFactory.cpp"
+ 
+		
+		  "..\..\share\util\XManagerModule.cpp"
+ 
+		
+		  "..\..\share\util\XModuleRefresh.cpp"
+ 
+		
+		  "..\..\share\util\XModuleRely.cpp"
+ 
+		
+		  "..\..\share\util\XRandom.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcg2m_opguildreqdata.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\superrisk\rpcc2g_riskbuyrequest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\chat\ptcc2g_setvoipmemberstate.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\smelt\rpcc2g_smeltitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\arena\ptcm2g_syncarenags.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\arena\rpcm2g_startarenags.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_refreshsweepreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_getsweeptowerreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcm2g_reqguilddarerewardrec.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcg2m_checkguilddarereward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_learnguildskill.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\arena\rpcg2m_endareanms.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_synguildsimpledata.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_reqroleguildskill.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\sprite\ptcc2g_openspriteeggntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_mnewguildbonusntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcg2m_mguildbonusoperatereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_queryscenetime.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_reqguildactivity.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_reqguildcheckin.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_noticeguildcheckin.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcg2m_notifycheckinbox.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_notifyguildcheckinprocess.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcg2m_guildcardsyncms.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_gettowerfirstpassreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_reqrecvfatigue.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_synfatigueresult.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_synguildcheckinhint.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\designation\rpcm2g_designationeventreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcm2g_gsreload.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcg2m_reqguildladderreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcm2g_msconsumeitems.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_gmfreadyreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_reqguildbosstimeleft.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_skycityallinforeq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qa\rpcg2m_enterqaroom.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qa\rpcg2m_createguildqaroom.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qa\ptcm2g_giveanserqarewardntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qa\ptcm2g_updateguildqaroom.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qa\ptcm2g_qaovertogs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_getspactivityreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_getspactivitybigprize.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\garden\rpcm2g_gardenplayevent.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\garden\ptcm2g_gardeneventntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\garden\rpcm2g_gardenplantchangestage.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_getguildladderrewardtime.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\ptcm2g_roleeventsyncgs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\login\rpct2g_reconnectgs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\levelseal\rpcc2g_getlevelsealselfgift.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_queryrolecardmatch.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcg2r_registergs2router.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcg2k_registergs2world.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptck2g_newrouterntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpck2g_createbattlecross.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcg2n_registergs2ns.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\auction\rpcm2g_guildauctreqm2c.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\mail\rpcm2g_givemailprize.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\ptcc2g_battlelogreport.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\reswar\rpcc2g_reswarallinforeqone.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\auction\rpcm2g_guildauctfailback.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\designation\rpcg2m_gsdesignationeventreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guildcamp\ptcc2g_clickguildcamp.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\item\rpcc2g_itembuffop.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcm2g_syncservertime.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dance\rpcc2g_justdance.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcc2g_getdailytaskinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcc2g_getdailytaskreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcm2g_worldlevelntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcr2g_notifyserverclose.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcc2g_dailytaskaskhelp.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcg2m_askguildhelp.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcm2g_costdonateitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcm2g_querydonateinfo.cpp"
+ 
+		
+		  "..\..\share\version\version.cpp"
+ 
+		
+		  "..\..\share\WebFetchThread.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_tryaddguildinherit.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcc2g_syndoingguildinherit.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_noticeguildinheritnuminfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qqvip\rpcc2g_queryqqvipinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcc2g_dailytaskgiveup.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcn2g_updatefunctionopen2gs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcm2g_crashrecoverm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcm2g_fetchroleinfoonms.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcr2g_mscrashrecoverr2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\reswar\rpcc2g_reswarbuff.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcg2m_tryteamcostreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcm2g_msdestoryscene.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qqvip\rpcc2g_queryqqfriendsvipinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_reqguildinherittimes.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\partner\rpcm2g_makepartnerm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\ptcc2g_picurlntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\partner\rpcc2g_takepartnerchest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pokertournament\rpcm2g_pokertournamentsignupcost.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\partner\rpcg2m_getpartnerinfog2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\partner\rpcm2g_getpartnerrecordm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\partner\ptcm2g_updatepartnertogs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\herobattle\rpcc2g_getherobattleinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\horse\rpcc2g_horsereconnect.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\photo\rpcc2g_photographeffect.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\photo\rpcg2m_getcharm.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\invfight\rpcm2g_invfightm2greq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\partner\rpcm2g_buypartneritemm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pandora\rpcc2g_pandoralottery.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guildcastle\ptcm2g_gcfsynm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\chat\rpcc2g_queryclientip.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcn2g_updatestartuptypen2gntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\herobattle\rpcc2g_setheroinherobattle.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_tryteacherinherit.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\ptcm2g_balanceinfontf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcm2g_paygetbalance.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcm2g_payconsumeaddgoods.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guildbonus\rpcc2g_getguildbonusleft.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\herobattle\rpcc2g_getherobattlegamerecord.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcr2g_notifyserverconnect.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\herobattle\rpcc2g_buyheroinherobattle.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\ptcc2g_queryrolestatereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\herobattle\rpcc2g_getherobattleweekreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\castle\rpcm2g_gcfcommonreqm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\garden\rpcg2m_getgardeninfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\atlas\rpcc2g_atlasupstar.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\leaguebattle\rpcc2g_leaguebattlereadyreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_forgeequip.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_enchantequip.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcc2g_changeprofession.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\reddot\ptcc2g_cancelreddotreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\leaguebattle\rpcg2m_leaguerankupdateg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcg2m_changeprofessionms.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcg2d_readhiddenroles.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\holidaystage\rpcc2g_getholidaystageinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\item\rpcc2g_itemsell.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_enchanttransfer.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_synguildbosshp.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_synguildbossdie.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_synguildbossdoend.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_noticeguildbossattr.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\misc\ptcm2g_controlfunctionntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\skill\rpcc2g_changeskillset.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\leaguebattle\rpcg2k_leaguerankupdateg2k.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\misc\rpcm2g_checknotice.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\misc\ptcm2g_clicknoticentf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_getpayreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptck2g_syncservertime2crossgs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcc2g_personalcareer.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcg2m_personalcareertotalinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcc2g_changedeclaration.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcc2g_closehintntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcg2m_getmulactopeninfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpck2g_crossgsreload.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptck2g_broadcastworld2gs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\militaryrank\rpcg2m_getmilitaryrank.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\militaryrank\ptcm2g_militaryrankchange.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_payfrienditem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcg2m_uppayfrienditem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcg2m_syncactivityend2ms.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\item\rpcc2g_itemcompose.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_getbackflowspacttime.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\ptcm2g_buypayaileenntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\worldboss\rpcm2g_worldbossguildaddattrgs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\worldboss\ptcm2g_worldbossguildaddattrsyncgsntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_argentaactivity.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\lottery\rpcc2g_getplatformsharechest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_modifygsguildname.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcm2g_enterscenefromms.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcm2g_broadcastglobalvalue.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\loginactivity\rpcc2g_loginactivity.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\loginactivity\ptcc2g_loginactivityawardreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_getgrowthfundtime.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\ibshop\rpcm2g_giftibitemreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\fashion\rpcc2g_activatefashioncharm.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcg2m_paydegreereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_getguildcampartyranditem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_talkguildcampsprite.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_guildcamppartyreqexchange.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_getguildcamppartyexchangeinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\custombattle\rpcm2g_custombattlegsop.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_guildcampexchangeoperate.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_getguildcamppartyreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcm2g_giftibreqgsgoods.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\artifact\rpcc2g_artifactcompose.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\absparty\rpcc2g_absenterscene.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_replypartyexchangeitemopt.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\enchant\rpcc2g_enchantactiveattribute.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\emblem\rpcc2g_buyextraskillemblemslot.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\custombattle\rpcg2m_custombattleresultms.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\custombattle\rpcg2k_custombattleresultworld.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlewatch\rpcc2g_changelivevisible.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpcc2g_reportbadplayer.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcm2g_teamtranms2gs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_getguildpartyreceiveinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\smelt\rpcc2g_returnsmeltstone.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\match\rpcm2g_kmatchcommonreqm2c.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pk\ptcm2g_pkupdatesynntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\platformshareresult\ptcc2g_notifyplatshareresult.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\platformshareresult\rpcc2g_getplatshareaward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\weekend4v4\rpcc2g_weekend4v4getinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_scenemobaop.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\mobabattle\rpcc2g_mobasignaling.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\fashion\rpcc2g_activatehaircolor.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_tryteacherinheritnew.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_dhrreqc2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pet\rpcc2g_petoperationother.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\login\rpcn2g_notifyroleloginreconnect2gs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\bigmelee\rpcg2k_reportbmroleinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\sprite\rpcc2g_buyspriteegg.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\enhance\rpcc2g_getenhanceattr.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_getancienttimesaward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\herobattle\rpcc2g_selectheroancientpower.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\marriage\rpcm2g_checkmarriagecouple.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\ptcc2g_battlestatisticsreport.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\wedding\rpcc2g_weddingoperator.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_tactenterscene.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragongroup\rpcc2g_dragongrouprolelist.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragongroup\rpcc2g_dragongrouprecord.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\marriage\rpcm2g_givemarriagelvrerewardm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\wedding\rpcm2g_holdweddingcheckm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\misc\ptcc2g_sharereport.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\artifact\rpcc2g_artifactdeitystoveop.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\wedding\rpcm2g_weddingoperm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\wedding\ptcm2g_weddingcarendm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_themeactivityhint.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_backflowbuyop.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\bigmelee\ptck2g_bigmeleeendntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\transform\rpcc2g_transformop.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_upgradeequip.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\fashion\rpcc2g_getfashionsynthesisinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\fashion\rpcc2g_fashionibshopbuy.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\invfight\ptcc2g_invfightagainreqc2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcm2g_createdragonguildcost.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcm2g_getrolepower.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcm2g_getdragonguildrecordm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcg2m_getdragonguildinfog2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcc2g_takedragonguildchest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\ptcm2g_syndragonguildsimpledata.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcm2g_modifydragonguildnamecost.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcc2g_getdragonguildtaskchest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcg2m_getdragonguildtaskchestg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcm2g_getdragonguildrecieveinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcm2g_buydragonguilditemm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\ptcm2g_notifydragonguildredpoint.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonguild\rpcg2m_checkdragonguildredpointg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlefield\rpcc2g_battlefieldawardnumreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlefield\rpcc2g_battlefieldrankreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcc2g_getweeklytaskinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcc2g_getweeklytaskreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcc2g_refreshweeklytask.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlefield\rpcc2g_battlefieldroleagainstreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\competedragon\rpcc2g_getcompetedragoninfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\goalawards\ptcm2g_goalawardsserverawards.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlefield\ptcm2g_battlefiedlreadyscenegsntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_setpreshow.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_fuseequip.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcc2g_turnoverweeklytaskitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcg2m_taskdonateg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_getluckyactivityinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_buydraw.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_lotterydraw.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\npcfeeling\rpcm2g_npcflreqm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\npcfeeling\ptcm2g_npcflnotifym2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battlefield\ptcm2g_battlefailinfogsntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\bigmelee\rpcg2k_bmranklistreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcm2g_dailytaskrefreshm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcg2m_dailytaskrefreshg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\survive\rpcc2g_survivereqc2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\survive\rpcg2m_survivesynpointg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcc2g_updatefreeflowhintinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpcc2g_doodaditemallskillreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\ptcm2g_consumerebatentf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_peerbox.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_queryboxs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_activatepreshow.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_guildpartysummonspirit.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\task\rpcg2m_getdailytaskg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\fashion\rpcc2g_choosespecialeffects.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcg2k_teamgotonextscenereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_enterleisurescene.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_backflowactivityoperation.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\ptcm2g_paytotalntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_getnewzonebenefit.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcg2m_getnewzonebenefitg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_selectchargebackrole.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\rift\rpcc2g_getmyriftinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\rift\rpcc2g_riftfirstpassreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_campduelactivityoperation.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcg2m_querycampdueldata.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcm2g_guildzicaiitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dance\rpcg2m_justdancems.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcg2m_guildhallgsgetbuff.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\crossgvg\rpcg2k_crossgvgbattleresultg2k.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\marriage\rpcg2m_getmarriageinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\vs\rpcc2g_vspayrevivereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_jadecomposenew.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_jadeoperationnew.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_buyjadeslotnew.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_takeoffalljadenew.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_getjadesealallinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\special\ptcm2g_correctmarrycheck.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcc2g_clientupdatepackage.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_inlayalljade.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_operation520festival.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcg2m_queryfestival520data.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_shadowcatoperation.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcm2g_dragonremotedatam2gntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_equipreturnrewardrequest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_equipinjectpsychic.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\worldbank\ptcm2g_worldbankinfontf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\worldbank\rpcg2m_getpptrank.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_returnpsychicstone.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_lucktoyreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_getlucktoydata.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\newexp\ptcm2g_worldexpidntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_authenticateequip.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\qqvip\rpcc2g_queryxinyuelevel.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_activitybuy.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_upgradealljade.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\duel\rpcm2g_duelreqm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\passwordprotect\ptcc2g_passwordprotectclientntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\passwordprotect\rpcc2g_setpasswrodprotectstate.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\passwordprotect\rpcc2g_changepasswordprotect.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\duel\rpcg2m_duelpvpupdaterank.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\chat\rpcm2g_getchatitemtogs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\passwordprotect\rpcc2g_getpasswordprotectinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\skill\rpcc2g_recommendskilloper.cpp"
+ 
+		
+		  "..\..\tolua\common_code\tolua_log.cpp"
+ 
+		
+		  "..\..\tolua\gs\lua_hotfix_handler.cpp"
+ 
+		
+		  "..\..\tolua\gs\manual\tolua_gs_manual.cpp"
+ 
+		
+		  "..\..\tolua\gs\tolua_gs_auto.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_getpayspecialchestinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\cutpage\rpcc2g_setcutpagename.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\cutpage\rpcc2g_usecutpage.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\cutpage\rpcc2g_setcutpageitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\ptcm2g_paychestserverntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_getcutpageinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pet\rpcc2g_querypetcollectionattr.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_getpsychicinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\chat\ptcm2g_tsschatntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\tsssdk\rpcg2m_checkmsgtss.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\professionchallenge\rpcc2g_getprofessionchallengerankcount.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\professionchallenge\rpcg2m_changeprofessionchangerank.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\professionchallenge\rpcc2g_buyprofessionchallengecount.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\nig\rpcm2g_nigreqm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\nig\ptcc2g_enternigscenereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\mecha\rpcc2g_mechaoperation.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\superrisk\rpcc2g_risksweep.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\lovehug\rpcc2g_lovehugreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\lovehug\rpcg2m_lovehugreqc2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guildfish\ptcm2g_correctfishdirection.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\sprite\rpcc2g_smeltspriteequip.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\smelt\rpcc2g_smeltequipauthenticate.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_huanlecardoper.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcg2m_huanlecardoperg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\ptcc2g_addlevelscriptstoptalk.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\shop\rpcc2g_queryshopopen.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\cutpage\rpcc2g_setcutpageprofession.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\changeprofession\rpcc2g_changeprofessioninfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\changeprofession\rpcc2g_changeprofessionupgradeskill.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\changeprofession\rpcc2g_changeprofessionactivate.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\changeprofession\rpcc2g_changeprofessionchangeskill.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\follower\rpcc2g_followerreqall.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\follower\ptcm2g_followermonstertalksyn.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\designation\rpcc2g_setdesignationviewstate.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_gtreareq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcg2m_gtreag2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\stardragon\rpcc2g_stardragoninfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\stardragon\rpcc2g_stardragonroll.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_chargelist.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonsecretarea\rpcc2g_dragonsecretareaoperator.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\rune\rpcc2g_dnrlruneinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle\rpcc2g_directpass.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_remouleequip.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcm2g_treasuresconsume.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\mentorship\ptcm2g_buildedmentor.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\gacha\ptcc2g_gachaclicked.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\gacha\rpcc2g_querygacha.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\role\rpcm2g_syncnamenickid.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcm2g_m2gversionnotify.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcm2g_slaydragonrequestm2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\ranklist\rpcg2k_updatewsranklist.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\social\rpcc2g_sendcraneuselua.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_spactsecretinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_spactsecretroll.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_spactsecrettotal.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_spactsecretlog.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_spactsecretaddbox.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_spactsecretreset.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\ptcm2g_telllovem2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_updateneedguide.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_getmulactivityinfos.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragon\rpcc2g_getnewdragontopinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\hidingcat\rpcc2g_hidingcatreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragon\ptcm2g_globaltopdragoninfontf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_equipreforge.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_equipstunt.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_equipinheri.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pay\rpcc2g_getlevelgiftreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\randboss\ptcm2g_randbosskillteamsync.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\equip\rpcc2g_iteminherit.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_getlevelgiftinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptcc2g_updatetutorialall.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\randboss\ptcm2g_randbossroundreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_nselectone.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_huanlecardrequest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dailydungeon\rpcc2g_getdailydungeon.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcc2g_gtrenuminforeq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\activity\rpcc2g_buytowerchallenge.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\superrisk\rpcc2g_refreshriskchest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_opendayreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\bag\rpcc2g_bagsortreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\item\rpcc2g_itemlock.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonsoul\rpcc2g_getdragonsoul.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonsoul\rpcc2g_dragonsouloperator.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\jade\rpcc2g_jadestrengthen.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_syncnewbosshp.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_syncnewbossdie.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_noticenewbossendtogsn.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\ptcm2g_syncnewbossdoend.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonsoul\rpcc2g_dragonsoulskill.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\charmshow\rpcc2g_charmshowjoin.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\charmshow\rpcc2g_charmshowdata.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\charmshow\rpcc2g_charmshowlikenew.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\charmshow\rpcc2g_charmshowhistory.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_querynewserverbaseinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\charmshow\rpcc2g_charmshowset.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_regionset.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\charmshow\rpcg2m_charmshowlikeg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_regionget.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\ranklist\rpcg2m_getrolerank.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_bopurequest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_combineshoprequest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragon\rpcc2g_greendragonreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pure_dragon\rpcc2g_getpuredragontopinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene_roll\rpcc2g_scenerollreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pure_season\rpcc2g_pureseasoninfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene\rpcc2g_getscenepasstime.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pure_season\rpcm2g_pureseasonsyncgs.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pure_season\rpcg2m_pureseasoninfoms.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pure_season\ptcm2g_pureseasoneventsync.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pure_season\rpcc2g_pureseasonlastseasoninfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\achievement\rpcc2g_seasonpureachievementreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragon\rpcc2g_ultimatedragonrequest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pure_season\ptck2g_pureseasonsyncntf.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\pure_season\ptck2g_pureseasoneventsyncworld.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_puppetvehiclereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle_pass\rpcc2g_battlepassinfo.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle_pass\rpcc2g_battlepassbuypass.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle_pass\rpcc2g_battlepassbuylevel.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle_pass\rpcc2g_battlepasstakereward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle_pass\rpcc2g_battlepasstask.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\battle_pass\rpcc2g_battlepasstaketaskreward.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\achievement\ptcm2g_updateachievement.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\principfight\rpcc2g_principoperator.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\designation\rpcc2g_designhint.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\mecha\rpcc2g_mechataskoperation.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\guild\rpcg2m_dragonkillerg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\lucky_bag\rpcc2g_luckybagshared.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\lucky_bag\rpcc2g_luckybagclear.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\rpcc2g_teamcountdaily.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\season\rpcm2g_seasonactinfom2g.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\achievement\rpcc2g_achievementscenereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcg2m_getchargebackinfog2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_chargebackrequest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\scene_roll\rpcc2g_scenerolelike.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\retrievereward\rpcc2g_retrieverewardreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\fashion\rpcc2g_getallfashionnum.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_getdigfortreasure.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_recruitrequest.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcg2m_recruitrequestg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\skilleffect\rpcc2g_skillefect.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\bag\rpcc2g_c2ginscriptionreq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\dragonsecretarea\rpcg2m_getdragonsecretareaglobaldata.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\runedraw\rpcc2g_runedrawoperator.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\runedraw\rpcg2m_runedrawoperatorg2m.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\spactivity\rpcc2g_c2gbeiyereq.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\artifactcharged\rpcc2g_artifactchargedopeator.cpp"
+ 
+		
+		
+		
+		  "..\..\gameserver\protocol\common\rpcm2g_msgiveitem.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\militaryrank\ptcm2g_addmilitaryrank.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\rpcm2g_teamstartbattlem2gcross.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\common\ptck2g_servercrossdataw2crossg.cpp"
+ 
+		
+		  "..\..\gameserver\protocol\team\ptcm2g_teamtranms2gs.cpp"
+ 
+		
+		
+		
+		
+	}
+}
+
+Executable('gameserver')
+{
+    .Libraries          = { 'gameserver_objs'}   // 把idipserver.exe所需的.obj(s)文件和.lib(s)文件链接成.exe文件
+    .LinkerOutput       = '..\..\exe\gameserver.exe'              // .exe文件输出目录
+	.LinkerOptions      + ' '
+
+
+	
+	 + ' common.lib '
++ ' ws2_32.lib '
++ ' libprotobuf.lib '
++ ' libiconv.lib '
++ ' zlib.lib '
++ ' mysqlclient.lib '
++ ' iocp.lib '
++ ' libcurl.lib '
++ ' tolua.lib '
++ ' lua53.lib '
++ ' libpb.lib '
+ 
+	
+
+
+
+
+
+
+
+
+}
+
+// 设置all包含的所有目标,执行fbuild.exe的时候,会默认把all下所有的目标都生成一遍,目标之间的依赖关系会被自动推导
+// All
+//------------------------------------------------------------------------------
+Alias( 'all' ) { .Targets = { 'gameserver'} }
